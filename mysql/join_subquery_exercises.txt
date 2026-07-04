@@ -1,0 +1,361 @@
+CREATE DATABASE subquery_practice;
+USE subquery_practice;
+-- Customers
+
+CREATE TABLE customers (
+    customer_id INT PRIMARY KEY,
+    customer_name VARCHAR(100),
+    city VARCHAR(50)
+);
+INSERT INTO customers VALUES
+(1, 'Alice', 'New York'),
+(2, 'Bob', 'Chicago'),
+(3, 'Charlie', 'Los Angeles'),
+(4, 'David', 'Chicago'),
+(5, 'Emma', 'New York');
+
+-- Products
+
+
+CREATE TABLE products (
+    product_id INT PRIMARY KEY,
+    product_name VARCHAR(100),
+    price DECIMAL(10,2)
+);
+
+INSERT INTO products VALUES
+(101, 'Laptop', 800),
+(102, 'Mouse', 20),
+(103, 'Keyboard', 50),
+(104, 'Monitor', 200),
+(105, 'Printer', 150);
+
+-- Orders
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    order_date DATE,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+
+INSERT INTO orders VALUES
+(1001,1,'2024-01-10'),
+(1002,2,'2024-01-12'),
+(1003,1,'2024-02-15'),
+(1004,3,'2024-02-20'),
+(1005,5,'2024-03-05');
+
+-- Order Items
+
+CREATE TABLE order_items (
+    item_id INT PRIMARY KEY,
+    order_id INT,
+    product_id INT,
+    quantity INT,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
+INSERT INTO order_items VALUES
+(1,1001,101,1),
+(2,1001,102,2),
+(3,1002,103,1),
+(4,1002,104,2),
+(5,1003,105,1),
+(6,1004,101,2),
+(7,1005,102,5),
+(8,1005,103,2);
+
+Practice Subqueries
+
+1. Customers who have placed orders
+select * from customers
+where customer_id in(select customer_id from customers)
+
+2. Customers who have never ordered
+select * from customers
+where customer_id not in(select customer_id from orders)
+
+3. Products costing more than the average price
+select * from products
+where price >(select avg(price) from products)
+
+4. Most expensive product
+select * from products
+where price=(select max(price) from products)
+
+5. Customers who bought a Laptop
+select * from customers
+where customer_id IN (select customer_id from orders where order_id IN (
+select order_id from order_items where product_id = (
+select product_id from products
+where product_name = 'Laptop'
+        )
+    )
+);
+
+6. Orders containing more than one item
+select * from orders
+where order_id in(select order_id from order_items group by order_id having count(*)>1)
+
+7. Second highest product price
+select price from products
+order by price desc limit 1,1
+
+Joins
+1. Display all orders with customers names.
+select c.customer_id ,o.order_id,o.order_date
+from orders o
+join customers c
+where c.customer_id = o.order_id
+
+Expected Output
+
+
+Order ID	Customer Name	Order Date
+
+2. Display all order items with product names.
+select o.item_id ,p.product_name,o.quantity
+from order_items o
+join products p
+on o.product_id=p.product_id
+
+Expected Output
+
+
+| Item ID | Product Name | Quantity |
+
+
+3. Show customer name and city for every order.
+select c.customer_name ,c.city,o.customer_id
+from customers c
+join orders o
+where c.customer_id=o.customer_id
+
+4. List product name and price for each order item.
+select p.product_name ,p.price,o.quantity
+from products p
+join order_items o
+where p.product_id=o.product_id
+
+5. Display order ID, customer name, and order date.
+
+
+Level 2: 
+Multiple Table JOINs
+
+6. Display customer name, product name, and quantity purchased.
+
+
+Tables:   
+
+customers 
+orders 
+order_items 
+products
+
+7. Show every order with:
+
+Order ID
+ Customer Name 
+Product Name
+  Quantity
+Price
+
+8. Calculate the total amount for each order.
+
+
+Formula  
+
+Quantity × Price
+
+
+
+Expected Output
+
+
+
+| Order ID | Total Amount |
+
+
+9. Display all products purchased by Alice.
+
+10. Display all customers who purchased a Laptop.
+
+Level 3:
+
+
+ LEFT JOIN
+
+11. Display all customers and their orders.
+
+Include customers with no orders.
+
+
+
+12. Display all products and whether they have been ordered.
+
+
+13. Display all customers with the number of orders they placed.
+
+
+14. Find customers who have never placed an order using 
+
+
+Level 4:
+ RIGHT JOIN
+
+15. Display all orders and customer details.
+
+
+16. Display every product and the order in which it appears.
+
+
+Level 5: 
+
+Aggregate + JOIN
+
+
+17. Find the total amount spent by each customer.
+
+
+18. Find the customer who spent the most.
+
+
+19. Count how many products each customer purchased.
+
+
+20. Find the average order value
+
+.
+21. Find the most frequently ordered product.
+
+
+22. Find the product with the highest total sales amount
+
+.
+Level 6: Self Challenge
+
+
+23. Display customers from the same city.
+
+
+
+Example:
+
+Alice   Emma
+Bob     David
+
+(Hint: Self Join)
+
+
+
+24. Find all customers who bought the sam
+
+
+
+
+---procedure practice..
+
+use subquery_practice;
+
+delimiter //
+
+create procedure proc1()
+begin 
+select p.product_name ,p.price,o.quantity
+from products p
+join order_items o
+where p.product_id=o.product_id;
+end//
+
+delimiter ;
+call proc1();
+
+
+delimiter //
+create procedure proc2(in product_id int)
+begin 
+
+select p.product_name ,p.price,o.quantity
+from products p
+join order_items o
+where p.product_id=o.product_id;
+
+end//
+
+delimiter ;
+
+drop procedure proc2
+
+call proc2(1004);
+
+delimiter //
+create procedure proc3()
+begin
+select * from order_items;
+end//
+
+delimiter ;
+call proc3()
+
+DELIMITER //
+
+create PROCEDURE proc4()
+begin
+    select c.customer_name,
+           sum(oi.quantity * p.price) as total_amount
+    from customers c
+    join orders o
+        on c.customer_id = o.customer_id
+    join order_items oi
+        on o.order_id = oi.order_id
+    join products p
+        on oi.product_id = p.product_id
+    group by c.customer_id, c.customer_name;
+END //
+
+DELIMITER ;
+call proc4();
+
+DELIMITER //
+
+create procedure  proc5()
+begin
+    select c.customer_name,sum(oi.quantity * p.price) as total_amount
+    from customers c
+    join orders o
+        on c.customer_id = o.customer_id
+    join order_items oi
+        on o.order_id = oi.order_id
+    join products p
+        on oi.product_id = p.product_id
+    group by  c.customer_id, c.customer_name
+    order by total_amount desc
+    limit 1;
+end //
+
+delimiter ;
+
+delimiter //
+
+create procedure proc6()
+begin
+    select avg(total_amount) as average_order_value
+    from
+    (
+        select o.order_id,
+               sum(oi.quantity * p.price) as total_amount
+        from orders o
+        join order_items oi
+            on o.order_id = oi.order_id
+        join products p
+            on oi.product_id = p.product_id
+        group by o.order_id
+    ) as order_total;
+end //
+
+delimiter ;
+call proc6()
+
+

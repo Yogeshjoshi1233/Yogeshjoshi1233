@@ -1,0 +1,267 @@
+CREATE DATABASE CollegeDB;
+
+USE CollegeDB;
+
+CREATE TABLE Student(
+    sid INT PRIMARY KEY,
+    sname VARCHAR(30),
+    age INT,
+    gender CHAR(1),
+    city VARCHAR(20),
+    marks INT,
+    deptid INT
+);
+
+CREATE TABLE Department(
+    deptid INT PRIMARY KEY,
+    deptname VARCHAR(30),
+    hod VARCHAR(30)
+);
+
+CREATE TABLE Employee(
+    empid INT PRIMARY KEY,
+    empname VARCHAR(30),
+    salary DECIMAL(10,2),
+    designation VARCHAR(30),
+    deptid INT
+);
+
+INSERT INTO Department VALUES
+(1,'Computer Science','Rajesh'),
+(2,'Mathematics','Anita'),
+(3,'Physics','Rakesh'),
+(4,'Commerce','Meena');
+
+INSERT INTO Student VALUES
+(101,'Amit',20,'M','Delhi',85,1),
+(102,'Priya',21,'F','Lucknow',91,2),
+(103,'Rahul',19,'M','Noida',72,1),
+(104,'Sneha',22,'F','Delhi',95,3),
+(105,'Karan',20,'M','Jaipur',68,4),
+(106,'Pooja',21,'F','Agra',88,2),
+(107,'Rohan',20,'M','Delhi',76,3),
+(108,'Neha',19,'F','Noida',81,1);
+
+
+
+INSERT INTO Employee VALUES
+(1,'Ajay',45000,'Manager',1),
+(2,'Rina',35000,'Developer',1),
+(3,'Mohan',40000,'Professor',2),
+(4,'Sunita',52000,'HOD',3),
+(5,'Vikas',30000,'Clerk',4);
+
+Procedure Practice Questions
+Level 1
+
+-- Q1
+Display all students.
+
+delimiter //
+create procedure p1()
+begin
+select * from student;
+end//
+delimiter ;
+call p1()
+
+-- Q2
+Display all employees.
+delimiter //
+create procedure p2()
+begin
+select * from employee;
+end//
+delimiter ;
+call p2()
+
+-- Q3
+Find student details using Student ID.
+delimiter //
+create procedure p3(in pid int)
+begin
+select * from student 
+where pid=sid;
+end//
+delimiter ;
+call p3(103);
+
+-- Q4
+Find employee salary using Employee ID.
+delimiter //
+create procedure p4(in eid int)
+begin
+select salary from employee
+where eid=empid;
+end//
+delimiter ;
+call p4(4)
+
+-- Q5
+Display department name using Department ID.
+delimiter //
+create procedure p5(in did int)
+begin
+select deptname from Department
+where did=deptid;
+end//
+delimiter ;
+call p5(2);
+
+Level2
+-- Q1
+Display all students from a given city.
+delimiter //
+create procedure p6(in cy varchar(20))
+begin 
+select 	* from student 
+where city=cy;
+end//
+delimiter ;
+call p6('Delhi');
+
+-- Q2
+Display students whose marks are greater than an input value.
+delimiter //
+create procedure p7(in m int)
+begin
+select * from student
+where marks>m;
+end//
+delimiter ;
+call p7(70)
+
+-- Q3
+Count total students.
+delimiter //
+create procedure p8()
+begin
+select count(*) as totalstd
+from student;
+end//
+delimiter ;
+call p8()
+
+-- Q4
+Count students in a department.
+delimiter //
+create procedure p9(in did int)
+begin
+select count(*) as totalstudents
+from student
+where deptid=did;
+end//
+delimiter ;
+
+call p9(2)
+
+-- Q5
+Display employees whose salary is greater than an entered salary.
+delimiter //
+create procedure p10(in esalary int)
+begin
+select * from employee 
+where salary>esalary;
+end//
+delimiter ;
+call p10(40000)
+
+
+OUT Parameter Practice
+-- Q11
+11.Find student name using Student ID.
+delimiter //
+create procedure p11(in idd int,out sname1 varchar(20))
+begin
+select sname into sname1 
+from student 
+where sid = idd;
+end//
+delimiter ;
+call p11(101,@name);
+select @name;
+Output: Student Name
+-- Q12
+Find student marks.
+delimiter //
+create procedure p12(in id int,out marks1 float)
+begin
+select marks into marks1
+from student
+where sid = id;
+end//
+delimiter ;
+call p12(103,@mk);
+select @mk;
+
+Output: Marks
+-- Q13
+Find employee name and salary.
+delimiter //
+create procedure p13(in emdid int,out sname3 varchar(20),out salary2 double)
+begin
+select empname ,salary into sname3,salary2
+from Employee
+where empid=emdid;
+end//
+delimiter ;
+call p13(5,@sname,@sal);
+select @sname,@sal;
+
+Outputs: Name, Salary
+
+Find department name and HOD.
+
+Outputs: Department Name, HOD
+
+Count students in a department.
+
+Output: Total Students
+
+INOUT Practice
+Increase a salary by ₹5000.
+Increase marks by 10.
+Double a number.
+
+Advanced Procedures
+Update student marks.
+Delete student by ID.
+Insert a new student.
+Show topper student.
+Show average marks.
+Show highest-paid employee.
+Show all students of Computer Science department.
+
+Function Practice Questions
+Easy
+Return square of a number.
+Return cube of a number.
+Return factorial.
+Return maximum of two numbers.
+Return minimum of three numbers.
+
+tring Functions
+Return full name in uppercase.
+Return length of student name.
+Return first character of a string.
+Return reverse of a string.
+Return concatenated first and last name.
+
+Aggregate Functions
+Return average student marks.
+Return maximum salary.
+Return minimum salary.
+Return total employees.
+Return total students.
+
+Challenge Questions
+Procedure to display all students with marks above the class average.
+Procedure to transfer an employee to another department.
+Function to return the department name from a student ID.
+Function to calculate annual salary.
+Procedure to display all students along with their department names using a join.
+Function to count students in a given city.
+Procedure to increase every employee's salary by 10%.
+Function to determine whether a student ID exists (Yes/No).
+Procedure to find the youngest and oldest student.
+Function to return the highest marks in a specified department.
