@@ -1,0 +1,1 @@
+First-year B.Tech CSE student with a passion for learning and problem-solving. Currently building skills in Python, MySQL, and Data Structures in C while exploring programming concepts and continuously expanding technical knowledge.
