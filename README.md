@@ -70,6 +70,7 @@
 </p>
 
 ![Top language](https://stats.pphat.top/languages?username=Yogeshjoshi1233)
+[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=Yogeshjoshi1233&layout=compact&theme=vision-friendly-dark)](https://github.com/Yogeshjoshi1233)
 <br/>
 
 ## 🔗 Connect with Me
